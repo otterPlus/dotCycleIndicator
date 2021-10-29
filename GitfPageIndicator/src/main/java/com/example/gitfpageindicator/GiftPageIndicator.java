@@ -354,17 +354,23 @@ public class GiftPageIndicator extends View implements PageIndicator {
                 invalidate();
             }
         }
+        animateDots();
         Log.d(TAG, " gotoNext mCurrentPage: " + mCurrentPage);
     }
 
     //圆点动画，从小到大和从大到小
     private void animateDots() {
-        for (int i = 0; i < mDots.size(); i++) {
-            ValueAnimator valueAnimator = mDots.get(i).getValueAnimator();
+        for (int i = 0; i < mDots.size() -2; i++) {
+            Dot dot = mDots.get(i);
+            ValueAnimator valueAnimator = dot.getValueAnimator();
             if (valueAnimator != null) {
                 valueAnimator.cancel();
             }
-            valueAnimator = ValueAnimator.ofFloat(mDots.get(i));
+            valueAnimator = ValueAnimator.ofFloat(mDots.get(i + 1).radius, mDots.get(i).radius);
+            valueAnimator.setDuration(200).addUpdateListener(animation -> {
+                dot.setRadius((Float) animation.getAnimatedValue());
+            });
+            valueAnimator.start();
         }
     }
 
