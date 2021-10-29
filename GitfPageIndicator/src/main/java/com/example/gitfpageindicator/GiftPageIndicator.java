@@ -11,6 +11,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 
 import androidx.viewpager.widget.PagerAdapter;
@@ -23,11 +24,20 @@ import java.util.ArrayList;
 public class GiftPageIndicator extends View implements PageIndicator {
     private static final int INVALID_POINTER = -1;
     private static final String TAG = "GiftPageIndicator";
-
+    //大圆半径
     private float mRadius;
+    //中圆半径
+    private float mMidRadius;
+    //小圆半径
+    private float mSmallRadius;
+
+    //圆之间的间隔
+    private float mDotSpace;
+
     private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintFill = new Paint(ANTI_ALIAS_FLAG);
+
     protected ViewPager mViewPager;
     protected ViewPager.OnPageChangeListener mListener;
     protected int mCurrentPage = 0;
@@ -39,6 +49,7 @@ public class GiftPageIndicator extends View implements PageIndicator {
     public static final int MAX_SHOW_DOT = 10;
 
     private ArrayList<ValueAnimator> valueAnimators = new ArrayList<>();
+    private SparseArray<Dot> mDots = new SparseArray<>();
     private float scrollAmount;
 
     public GiftPageIndicator(Context context) {
@@ -60,6 +71,8 @@ public class GiftPageIndicator extends View implements PageIndicator {
         final int defaultStrokeColor = res.getColor(R.color.default_circle_indicator_stroke_color);
         final float defaultStrokeWidth = res.getDimension(R.dimen.default_circle_indicator_stroke_width);
         final float defaultRadius = res.getDimension(R.dimen.default_circle_indicator_radius);
+        final float defaultMidRadius = res.getDimension(R.dimen.default_mid_circle_indicator_radius);
+        final float defaultSmallRadius = res.getDimension(R.dimen.default_small_circle_indicator_radius);
         final boolean defaultCentered = res.getBoolean(R.bool.default_circle_indicator_centered);
         //Retrieve styles attributes
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CirclePageIndicator, defStyle, 0);
@@ -72,72 +85,19 @@ public class GiftPageIndicator extends View implements PageIndicator {
         mPaintFill.setStyle(Style.FILL);
         mPaintFill.setColor(a.getColor(R.styleable.CirclePageIndicator_fillColor, defaultFillColor));
         mRadius = a.getDimension(R.styleable.CirclePageIndicator_radius, defaultRadius);
+        mMidRadius =  a.getDimension(R.styleable.CirclePageIndicator_radius, defaultMidRadius);
+        mSmallRadius =  a.getDimension(R.styleable.CirclePageIndicator_radius, defaultSmallRadius);
+
+        //圆之间间隔默认为大圆半径
+        mDotSpace = mRadius;
+
         a.recycle();
-    }
-
-
-    public void setCentered(boolean centered) {
-        mCentered = centered;
-        invalidate();
-    }
-
-    public boolean isCentered() {
-        return mCentered;
-    }
-
-    public void setPageColor(int pageColor) {
-        mPaintPageFill.setColor(pageColor);
-        invalidate();
-    }
-
-    public int getPageColor() {
-        return mPaintPageFill.getColor();
-    }
-
-    public void setFillColor(int fillColor) {
-        mPaintFill.setColor(fillColor);
-        invalidate();
-    }
-
-    public int getFillColor() {
-        return mPaintFill.getColor();
-    }
-
-
-    public void setStrokeColor(int strokeColor) {
-        mPaintStroke.setColor(strokeColor);
-        invalidate();
-    }
-
-    public int getStrokeColor() {
-        return mPaintStroke.getColor();
-    }
-
-    public void setStrokeWidth(float strokeWidth) {
-        mPaintStroke.setStrokeWidth(strokeWidth);
-        invalidate();
-    }
-
-    public float getStrokeWidth() {
-        return mPaintStroke.getStrokeWidth();
-    }
-
-    public void setRadius(float radius) {
-        mRadius = radius;
-        invalidate();
-    }
-
-    public float getRadius() {
-        return mRadius;
     }
 
 
     public int getViewPagerAdapterCount() {
         PagerAdapter adapter = mViewPager.getAdapter();
         if (adapter != null && adapter.getCount() > 0) {
-            for (int i = 0; i < adapter.getCount(); i++) {
-                valueAnimators.add(new ValueAnimator());
-            }
             return adapter.getCount();
         }
         return 0;
@@ -163,21 +123,27 @@ public class GiftPageIndicator extends View implements PageIndicator {
 
         float longPaddingBefore = getPaddingLeft();
         int shortPaddingBefore = getPaddingTop();
-        final float threeRadius = mRadius * 3;
         final float shortOffset = shortPaddingBefore + mRadius;
-        float longOffset = longPaddingBefore + mRadius;
-        float dX;
+        float dX = 0;
         float dY;
         //Draw stroked circles
-        for (int iLoop = -1; iLoop < getViewPagerAdapterCount(); iLoop++) {
-            dX = longOffset + (iLoop * threeRadius) - scrollAmount;
-            dY = shortOffset;
-            if (iLoop != mCurrentPage ) {
-                //Log.d(TAG, "dx:" + dX + " dY" + dY + " mRadius:" + mRadius);
-                canvas.drawCircle(dX, dY, mRadius, mPaintStroke);
-            } else {
-                canvas.drawCircle(dX, dY, mRadius, mPaintFill);
+        for (int iLoop = 0; iLoop < mDots.size(); iLoop++) {
+            Dot dot = mDots.get(iLoop);
+            //计算下个圆的坐标，应该等于上个圆的圆心加上上个圆的半径加上间隔加上当前圆的半径
+            if(iLoop == 0){
+                dX = dX + longPaddingBefore + dot.radius;
+            }else {
+                dX = dX + longPaddingBefore + mDotSpace + dot.radius;
             }
+            dY = shortOffset;
+            //判断是否被选择，选择到了需要画颜色
+            if (!dot.selected) {
+                canvas.drawCircle(dX - scrollAmount, dY, dot.radius, mPaintStroke);
+            } else {
+                canvas.drawCircle(dX - scrollAmount, dY, dot.radius, mPaintFill);
+            }
+            //画完之后加上当前半径，使得坐标位于圆的边上
+            dX += dot.radius;
         }
     }
 
@@ -187,14 +153,23 @@ public class GiftPageIndicator extends View implements PageIndicator {
         if (mViewPager == view) {
             return;
         }
-        if (mViewPager != null) {
-            mViewPager.setOnPageChangeListener(null);
-        }
         if (view.getAdapter() == null) {
             throw new IllegalStateException("ViewPager does not have adapter instance.");
         }
         mViewPager = view;
-        mViewPager.setOnPageChangeListener(this);
+        mViewPager.addOnPageChangeListener(this);
+        for (int i = 0; i < view.getAdapter() .getCount(); i++) {
+            valueAnimators.add(new ValueAnimator());
+            if (i == 0) {
+                mDots.put(i, new Dot(mRadius, true));
+            } else if (i == MAX_SHOW_DOT - 2) {
+                mDots.put(i, new Dot(mMidRadius, false));
+            } else if (i == MAX_SHOW_DOT - 1) {
+                mDots.put(i, new Dot(mSmallRadius, false));
+            } else {
+                mDots.put(i, new Dot(mRadius, false));
+            }
+        }
         invalidate();
     }
 
@@ -270,7 +245,7 @@ public class GiftPageIndicator extends View implements PageIndicator {
 
     ValueAnimator scrollAnimator = new ValueAnimator();
 
-    private void animateDots(boolean forward) {
+    private void scrollToTarget(boolean forward) {
         scrollAnimator.cancel();
         if (forward) {
             scrollAnimator = ValueAnimator.ofFloat(0, mRadius * 3);
@@ -283,6 +258,7 @@ public class GiftPageIndicator extends View implements PageIndicator {
         });
         scrollAnimator.start();
     }
+
 
     /*
      * (non-Javadoc)
@@ -304,9 +280,23 @@ public class GiftPageIndicator extends View implements PageIndicator {
             result = specSize;
         } else {
             //Calculate the width according the views count
-            final int count = MAX_SHOW_DOT;
+            //大圆圈的数量
+            int bigDotCount;
+            //中等大小圆圈数量
+            int midDotCount;
+            //小圆圈数量
+            int smallDotCount;
+            if(mCurrentPage > MAX_SHOW_DOT - 1 && mCurrentPage < getViewPagerAdapterCount() - 3){
+                bigDotCount = 6;
+                midDotCount = 2;
+                smallDotCount = 2;
+            }else {
+                bigDotCount = 8;
+                midDotCount = 1;
+                smallDotCount = 1;
+            }
             result = (int) (getPaddingLeft() + getPaddingRight()
-                    + (count * 2 * mRadius) + (count - 1) * mRadius + 1);
+                    + (bigDotCount * 2 * mRadius) + (midDotCount * 2 * mMidRadius) + ( smallDotCount * 2 * mSmallRadius) + (MAX_SHOW_DOT - 1) * mRadius + 1);
             //Respect AT_MOST value if that was what is called for by measureSpec
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
@@ -353,26 +343,39 @@ public class GiftPageIndicator extends View implements PageIndicator {
 
     public void gotoNext() {
         if (mCurrentPage >= getViewPagerAdapterCount() - 1) {
-            mCurrentPage = 0;
-            animateDots(true);
         } else {
+            mDots.get(mCurrentPage).setSelected(false);
             mCurrentPage++;
-            if(mCurrentPage >= MAX_SHOW_DOT){
-                animateDots(true);
-            }else {
+            if(mCurrentPage >= MAX_SHOW_DOT - 2){
+                mDots.get(mCurrentPage).setSelected(true);
+                scrollToTarget(true);
+            } else {
+                mDots.get(mCurrentPage).setSelected(true);
                 invalidate();
             }
         }
         Log.d(TAG, " gotoNext mCurrentPage: " + mCurrentPage);
     }
 
+    //圆点动画，从小到大和从大到小
+    private void animateDots() {
+        for (int i = 0; i < mDots.size(); i++) {
+            ValueAnimator valueAnimator = mDots.get(i).getValueAnimator();
+            if (valueAnimator != null) {
+                valueAnimator.cancel();
+            }
+            valueAnimator = ValueAnimator.ofFloat(mDots.get(i));
+        }
+    }
+
+
     public void gotoPreivous() {
         if (mCurrentPage <= 0) {
-            mCurrentPage = getViewPagerAdapterCount() - 1;
-            animateDots(false);
         } else {
+            mDots.get(mCurrentPage).setSelected(false);
             mCurrentPage--;
-            invalidate();
+            mDots.get(mCurrentPage).setSelected(true);
+            scrollToTarget(false);
         }
         Log.d(TAG, " gotoPreivous mCurrentPage: " + mCurrentPage);
     }
