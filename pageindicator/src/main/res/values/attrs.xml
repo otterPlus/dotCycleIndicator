@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="GiftPagerIndicatorStyle"/>
+
+    <declare-styleable name="GiftPagerIndicator">
+        <attr name="gift_dotColor" format="color" />
+        <attr name="gift_dotSelectedColor" format="color" />
+        <attr name="gift_dotSize" format="dimension" />
+        <attr name="gift_dotSelectedSize" format="dimension" />
+        <attr name="gift_dotMinimumSize" format="dimension" />
+        <attr name="gift_dotSpacing" format="dimension" />
+        <attr name="gift_visibleDotCount" format="integer" />
+        <attr name="gift_visibleDotThreshold" format="integer" />
+        <attr name="gift_looped" format="boolean" />
+        <attr name="gift_orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+    </declare-styleable>
+
+</resources>

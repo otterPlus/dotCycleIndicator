@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="GiftPagerIndicator">
+        <item name="gift_dotColor">@android:color/darker_gray</item>
+        <item name="gift_dotSelectedColor">#3F51B5</item>
+        <item name="gift_dotSize">10dp</item>
+        <item name="gift_dotSelectedSize">10dp</item>
+        <item name="gift_dotSpacing">10dp</item>
+        <item name="gift_visibleDotCount">9</item>
+        <item name="gift_visibleDotThreshold">2</item>
+        <item name="gift_looped">false</item>
+        <item name="gift_dotMinimumSize">6dp</item>
+    </style>
+</resources>

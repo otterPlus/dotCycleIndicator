@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "dotCycleIndicator"
 include ':app'
 include ':GitfPageIndicator'
+include ':pageindicator'

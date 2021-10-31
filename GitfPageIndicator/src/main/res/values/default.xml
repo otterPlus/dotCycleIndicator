@@ -5,6 +5,8 @@
     <color name="default_circle_indicator_page_color">#00000000</color>
     <integer name="default_circle_indicator_orientation">0</integer>
     <dimen name="default_circle_indicator_radius">10dp</dimen>
+    <dimen name="default_mid_circle_indicator_radius">8dp</dimen>
+    <dimen name="default_small_circle_indicator_radius">6dp</dimen>
     <bool name="default_circle_indicator_snap">false</bool>
     <color name="default_circle_indicator_stroke_color">#000000</color>
     <dimen name="default_circle_indicator_stroke_width">1dp</dimen>

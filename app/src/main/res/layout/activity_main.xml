@@ -1,41 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <com.example.gitfpageindicator.GiftPageIndicator
-        android:id="@+id/gift_page_indictor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gift_page_indictor"
-        app:layout_constraintVertical_bias="0.305" />
+        <NumberPicker
+            android:id="@+id/page_number_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/visible_dot_number_picker"
+            app:layout_constraintTop_toBottomOf="@id/page_count_label" />
 
-    <Button
-        android:id="@+id/previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="previous"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/next"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gift_page_indictor"
-        app:layout_constraintVertical_bias="0.305" />
+        <NumberPicker
+            android:id="@+id/visible_dot_number_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/page_number_picker"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/page_number_picker" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/pager_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/title_pager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:text="next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/pager_title"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <Button
+            android:id="@+id/preivous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="previous"
+            app:layout_constraintRight_toLeftOf="@id/pager_title"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/pager_title2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/title_pager2"
+            app:layout_constraintTop_toBottomOf="@id/pager" />
+
+        <TextView
+            android:id="@+id/recycler_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/title_recycler"
+            app:layout_constraintTop_toBottomOf="@id/pager2" />
+
+        <TextView
+            android:id="@+id/page_count_label"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/label_page_count"
+            app:layout_constraintLeft_toLeftOf="@+id/page_number_picker"
+            app:layout_constraintRight_toRightOf="@+id/page_number_picker"
+            app:layout_constraintTop_toBottomOf="@id/recycler" />
+
+        <TextView
+            android:id="@+id/visible_dot_count_label"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/label_visible_dot_count"
+            app:layout_constraintLeft_toLeftOf="@id/visible_dot_number_picker"
+            app:layout_constraintRight_toRightOf="@id/visible_dot_number_picker"
+            app:layout_constraintTop_toBottomOf="@id/recycler" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pager_height"
+            android:layout_marginTop="32dp"
+            android:clipToPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/recycler_title" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pager_height"
+            app:layout_constraintTop_toBottomOf="@id/pager_indicator" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pager_height"
+            app:layout_constraintTop_toBottomOf="@id/pager_indicator2" />
+
+        <com.plantart.pageindicator.GiftPagerIndicator
+            android:id="@+id/pager_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pager_title"
+            app:gift_dotColor="@color/dotNormal"
+            app:gift_dotSelectedColor="@color/dotHighlight" />
+
+        <com.plantart.pageindicator.GiftPagerIndicator
+            android:id="@+id/pager_indicator2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pager_title2"
+            app:gift_dotColor="@color/dotNormal"
+            app:gift_dotSelectedColor="@color/dotHighlight" />
+
+        <com.plantart.pageindicator.GiftPagerIndicator
+            android:id="@+id/recycler_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            app:layout_constraintBottom_toBottomOf="@id/recycler"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/recycler"
+            app:gift_dotColor="@color/dotNormal"
+            app:gift_dotSelectedColor="@color/dotHighlight"
+            app:gift_orientation="vertical" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
